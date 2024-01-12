@@ -1,56 +1,58 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-hant">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>橘貓 IP 檢視器</title>
-    <style>
-        body {
-            font-family: cursive;
-            text-align: center;
-            margin: 50px;
-        }
-        #result {
-            font-size: 1.5em;
-            margin-top: 20px;
-            color: red;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>橘貓IP地址檢視器</title>
+  <style>
+    body {
+      font-family: cursive;
+      margin: 20px;
+      text-align: center; /* 讓文本在頁面中置中 */
+    }
+
+    #ip-container {
+      margin-top: 50px;
+    }
+
+    #ip-address {
+      font-size: 24px;
+      font-weight: bold;
+      color: blue;
+    }
+    .chinese-text {
+      color: red;
+    }
+
+    #get-ip-button {
+      font-family: cursive;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <h1>橘貓 IP 檢視器</h1>
-    <p style="color: blue;">您的 IP 位址是：</p>
-    <div id="result"></div>
+  <h1>橘貓IP地址檢視器</h1>
+  
+  <div id="ip-container">
+    <p id="ip-address">你的IP地址將顯示在這裡</p>
+    <button id="get-ip-button" onclick="getIPAddress()">獲取IP地址</button>
+  </div>
 
-    <script>
-        // 使用 ipapi API 獲取 IP 位址
-        async function getIPAddress() {
-            try {
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-                return data.ip;
-            } catch (error) {
-                console.error('無法獲取 IP 位址：', error);
-                return '未知';
-            }
-        }
-
-        // 提取 IPv4 地址
-        function extractIPv4(ipAddress) {
-            const match = ipAddress.match(/(\d+\.\d+\.\d+\.\d+)/);
-            return match ? match[0] : '未知';
-        }
-
-        // 顯示 IP 位址在網頁上
-        async function displayIPAddress() {
-            const ipAddress = await getIPAddress();
-            const ipv4Address = extractIPv4(ipAddress);
-            const resultElement = document.getElementById('result');
-            resultElement.textContent = ipv4Address;
-        }
-
-        // 在頁面載入完成後執行
-        document.addEventListener('DOMContentLoaded', displayIPAddress);
-    </script>
+  <script>
+    function getIPAddress() {
+      fetch('https://api64.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          const ipAddress = data.ip;
+          document.getElementById('ip-address').innerHTML = `你的IP地址是：<span class="chinese-text">${ipAddress}</span>`;
+        })
+        .catch(error => {
+          console.error('獲取IP地址時出現錯誤：', error);
+          document.getElementById('ip-address').textContent = '無法獲取IP地址';
+        });
+    }
+  </script>
 </body>
 </html>
