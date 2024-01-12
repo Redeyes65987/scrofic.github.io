@@ -26,7 +26,6 @@
       font-weight: bold;
       color: red;
     }
-    /* 增加按鈕樣式 */
     button {
       color: blue;
       font-size: 20px;
@@ -39,21 +38,19 @@
   <h1>橘貓IP</h1>
   <p2>我的IP地址</p2>
   <p id="ip">點擊按鈕獲取IP</p>
-  <!-- 新增按鈕 -->
   <button onclick="getIPAddress()">獲取IP地址</button>
   <script>
     function getIPAddress() {
-      // 使用fetch API來發送請求到一個免費的IP服務
       fetch('https://api.ipify.org?format=json')
-        .then(response => response.json()) // 將響應轉換為JSON對象
-        .then(data => { // 獲取data中的ip屬性
+        .then(response => response.json()) 
+        .then(data => { 
           let ip = data.ip;
-          // 獲取網頁中的ip元素
+          
           let ipElement = document.getElementById('ip');
-          // 將ip元素的內容設為ip地址
+          
           ipElement.textContent = ip;
         })
-        .catch(error => { // 處理錯誤
+        .catch(error => { 
           console.error(error);
           alert('無法獲取IP地址，請檢查您的網路連接');
         });
