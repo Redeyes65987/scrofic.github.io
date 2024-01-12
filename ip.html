@@ -1,58 +1,46 @@
 <!DOCTYPE html>
 <html lang="zh-hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>橘貓IP地址檢視器</title>
+  <title>橘貓IP查詢</title>
   <style>
     body {
       font-family: cursive;
-      margin: 20px;
-      text-align: center; /* 讓文本在頁面中置中 */
+      text-align: center;
     }
 
-    #ip-container {
-      margin-top: 50px;
+    h1 {
+      color: black;
     }
-
-    #ip-address {
+    p2 {
       font-size: 24px;
-      font-weight: bold;
       color: blue;
     }
-    .chinese-text {
+    #ip {
+      font-size: 24px;
+      font-weight: bold;
       color: red;
-    }
-
-    #get-ip-button {
-      font-family: cursive;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>橘貓IP地址檢視器</h1>
-  
-  <div id="ip-container">
-    <p id="ip-address">你的IP地址將顯示在這裡</p>
-    <button id="get-ip-button" onclick="getIPAddress()">獲取IP地址</button>
-  </div>
-
+  <h1>橘貓IP</h1>
+  <p2>我的IP地址</p2>
+  <p id="ip">正在獲取...</p>
   <script>
-    function getIPAddress() {
-      fetch('https://api64.ipify.org?format=json')
-        .then(response => response.json())
-        .then(data => {
-          const ipAddress = data.ip;
-          document.getElementById('ip-address').innerHTML = `你的IP地址是：<span class="chinese-text">${ipAddress}</span>`;
-        })
-        .catch(error => {
-          console.error('獲取IP地址時出現錯誤：', error);
-          document.getElementById('ip-address').textContent = '無法獲取IP地址';
-        });
-    }
+    // 使用fetch API來發送請求到一個免費的IP服務
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json()) // 將響應轉換為JSON對象
+      .then(data => { // 獲取data中的ip屬性
+        let ip = data.ip;
+        // 獲取網頁中的ip元素
+        let ipElement = document.getElementById('ip');
+        // 將ip元素的內容設為ip地址
+        ipElement.textContent = ip;
+      })
+      .catch(error => { // 處理錯誤
+        console.error(error);
+        alert('無法獲取IP地址，請檢查您的網路連接');
+      });
   </script>
 </body>
 </html>
