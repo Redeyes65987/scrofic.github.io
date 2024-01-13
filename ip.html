@@ -1,60 +1,66 @@
 <!DOCTYPE html>
 <html lang="zh-hant">
-<head>
-  <link rel="icon" href="orangecat.ico" type="image/x-icon">
-  <title>橘貓IP查詢</title>
-  <style>
-    body {
-      font-family: sans-serif, Microsoft JhengHei;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
 
-    h1 {
-      color: black;
-      font-size: 60px;
-    }
-    p2 {
-      font-size: 50px;
-      color: blue;
-    }
-    #ip {
-      font-size: 50px;
-      font-weight: bold;
-      color: red;
-    }
-    button {
-      color: blue;
-      font-size: 20px;
-      padding: 10px 20px;
-      margin-top: 10px;
-    }
-  </style>
+<head>
+    <link rel="icon" href="orangecat.ico" type="image/x-icon">
+    <title>橘貓IP查詢</title>
+    <style>
+        body {
+            font-family: sans-serif, Microsoft JhengHei;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: black;
+            font-size: 60px;
+        }
+
+        p2 {
+            font-size: 50px;
+            color: blue;
+        }
+
+        #ip {
+            font-size: 50px;
+            font-weight: bold;
+            color: red;
+        }
+
+        button {
+            color: blue;
+            font-size: 20px;
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>橘貓IP</h1>
-  <p2>我的IP地址</p2>
-  <p id="ip">點擊按鈕獲取IP</p>
-  <button onclick="getIPAddress()">獲取IP地址</button>
-  <script>
-    function getIPAddress() {
-      fetch('https://api.ipify.org?format=json')
-        .then(response => response.json()) 
-        .then(data => { 
-          let ip = data.ip;
-          
-          let ipElement = document.getElementById('ip');
-          
-          ipElement.textContent = ip;
-        })
-        .catch(error => { 
-          console.error(error);
-          alert('無法獲取IP地址，請檢查您的網路連接');
-        });
-    }
-  </script>
+    <h1>橘貓IP</h1>
+    <p2>我的IP地址</p2>
+    <p id="ip">點擊按鈕獲取IP</p>
+    <button onclick="getIPAddress()">獲取IP地址</button>
+    <script>
+        function getIPAddress() {
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    let ip = data.ip;
+
+                    let ipElement = document.getElementById('ip');
+
+                    ipElement.textContent = ip;
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('無法獲取IP地址，請檢查您的網路連接');
+                });
+        }
+    </script>
 </body>
+
 </html>
