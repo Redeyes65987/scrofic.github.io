@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小方塊</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f8ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #game {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            height: 200px;
+            border: 2px solid #000;
+            background-color: #fff;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        #dino {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: 40px;
+            height: 40px;
+            background-color: #8b4513;
+            border-radius: 5px;
+            animation: run 0.5s steps(4) infinite;
+        }
+        @keyframes run {
+            from { background-position: 0; }
+            to { background-position: -160px; }
+        }
+        .cactus, .bird, .rock {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 40px;
+            background-color: #228b22;
+            border-radius: 3px;
+        }
+        .bird {
+            bottom: 60px;
+            width: 30px;
+            height: 20px;
+            background-color: #ff4500;
+            border-radius: 3px;
+            animation: fly 0.5s steps(4) infinite;
+        }
+        .rock {
+            width: 30px;
+            height: 30px;
+            background-color: #808080;
+            border-radius: 50%;
+        }
+        @keyframes fly {
+            from { background-position: 0; }
+            to { background-position: -120px; }
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        #highScore {
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        #gameOver {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            color: red;
+            font-weight: bold;
+        }
+        .cloud {
+            position: absolute;
+            top: 20px;
+            width: 60px;
+            height: 30px;
+            background-color: #fff;
+            border-radius: 50%;
+            box-shadow: 20px 10px 0 10px #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="dino"></div>
+        <div id="score">Score: 0</div>
+        <div id="highScore">High Score: 0</div>
+        <div id="gameOver">Game Over</div>
+        <div class="cloud" style="left: 100px;"></div>
+        <div class="cloud" style="left: 300px;"></div>
+    </div>
+    <script>
+        const game = document.getElementById('game');
+        const dino = document.getElementById('dino');
+        const scoreDisplay = document.getElementById('score');
+        const highScoreDisplay = document.getElementById('highScore');
+        const gameOverDisplay = document.getElementById('gameOver');
+        let isJumping = false;
+        let gravity = 0.9;
+        let position = 0;
+        let score = 0;
+        let highScore = localStorage.getItem('highScore') || 0;
+        let gameOver = false;
+        let speed = 10;
+        let jumpCount = 0;
+
+        highScoreDisplay.textContent = `High Score: ${highScore}`;
+
+        function control(e) {
+            if (e.keyCode === 32 || e.keyCode === 38) {
+                if (!isJumping || jumpCount < 2) {
+                    isJumping = true;
+                    jump();
+                    jumpCount++;
+                } else if (gameOver) {
+                    restartGame();
+                }
+            }
+        }
+
+        function touchControl() {
+            if (!isJumping || jumpCount < 2) {
+                isJumping = true;
+                jump();
+                jumpCount++;
+            } else if (gameOver) {
+                restartGame();
+            }
+        }
+
+        document.addEventListener('keydown', control);
+        game.addEventListener('click', touchControl);
+
+        function jump() {
+            let count = 0;
+            let timerId = setInterval(function() {
+                // move down
+                if (count === 15) {
+                    clearInterval(timerId);
+                    let downTimerId = setInterval(function() {
+                        if (count === 0) {
+                            clearInterval(downTimerId);
+                            isJumping = false;
+                            jumpCount = 0;
+                        }
+                        position -= 5;
+                        count--;
+                        position = position * gravity;
+                        dino.style.bottom = position + 'px';
+                    }, 20);
+                }
+                // move up
+                position += 30;
+                count++;
+                position = position * gravity;
+                dino.style.bottom = position + 'px';
+            }, 20);
+        }
+
+        function generateObstacle() {
+            if (gameOver) return;
+
+            let obstaclePosition = game.offsetWidth;
+            const obstacle = document.createElement('div');
+            const obstacleType = Math.random();
+            if (obstacleType < 0.4) {
+                obstacle.classList.add('cactus');
+            } else if (obstacleType < 0.8) {
+                obstacle.classList.add('bird');
+            } else {
+                obstacle.classList.add('rock');
+            }
+            game.appendChild(obstacle);
+            obstacle.style.left = obstaclePosition + 'px';
+
+            let timerId = setInterval(function() {
+                if (obstaclePosition > 0 && obstaclePosition < 60 && position < 40 && obstacle.classList.contains('cactus')) {
+                    clearInterval(timerId);
+                    gameOver = true;
+                    gameOverDisplay.style.display = 'block';
+                    updateHighScore();
+                    return;
+                }
+                if (obstaclePosition > 0 && obstaclePosition < 60 && position > 30 && position < 70 && obstacle.classList.contains('bird')) {
+                    clearInterval(timerId);
+                    gameOver = true;
+                    gameOverDisplay.style.display = 'block';
+                    updateHighScore();
+                    return;
+                }
+                if (obstaclePosition > 0 && obstaclePosition < 60 && position < 30 && obstacle.classList.contains('rock')) {
+                    clearInterval(timerId);
+                    gameOver = true;
+                    gameOverDisplay.style.display = 'block';
+                    updateHighScore();
+                    return;
+                }
+                obstaclePosition -= speed;
+                obstacle.style.left = obstaclePosition + 'px';
+
+                if (obstaclePosition < 0) {
+                    clearInterval(timerId);
+                    game.removeChild(obstacle);
+                }
+            }, 20);
+
+            setTimeout(generateObstacle, Math.random() * 2000 + 1000); // 障礙物之間的間隔時間調整為1到3秒
+        }
+
+        function updateScore() {
+            if (!gameOver) {
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+                if (score % 20 === 0) {
+                    speed += 1; // 每20分增加一次速度
+                }
+                setTimeout(updateScore, 500); // 每0.5秒更新一次分數
+            }
+        }
+
+        function updateHighScore() {
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('highScore', highScore);
+                highScoreDisplay.textContent = `High Score: ${highScore}`;
+            }
+        }
+
+        function restartGame() {
+            gameOver = false;
+            gameOverDisplay.style.display = 'none';
+            score = 0;
+            speed = 10;
+            scoreDisplay.textContent = `Score: ${score}`;
+            let obstacles = document.querySelectorAll('.cactus, .bird, .rock');
+            obstacles.forEach(obstacle => game.removeChild(obstacle));
+            generateObstacle();
+            updateScore();
+        }
+
+        generateObstacle();
+        updateScore();
+    </script>
+</body>
+</html>
